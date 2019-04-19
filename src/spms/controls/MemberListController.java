@@ -5,8 +5,10 @@ import java.util.Map;
 import spms.dao.MemberDao;
 
 public class MemberListController implements Controller {
-	MemberDao memberDao;
 	
+	//의존객체 주입(DI) 인스턴스 변수와 셋터 메소드
+	//
+	MemberDao memberDao;
 	public MemberListController setMemberDao(MemberDao memberDao) {
 		this.memberDao = memberDao;
 		return this;
@@ -14,7 +16,7 @@ public class MemberListController implements Controller {
 
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
-		MemberDao memberDao = (MemberDao)model.get("memberDao");
+//		MemberDao memberDao = (MemberDao)model.get("memberDao");
 		model.put("members",memberDao.selectList());
 		return "/member/MemberList.jsp";
 	}

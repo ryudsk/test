@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import spms.controls.Controller;
 import spms.controls.LogInController;
@@ -29,7 +28,6 @@ public class DispatcherServlet extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8"); //응답데이터의 문자집합
 		request.setCharacterEncoding("UTF-8");
 		String servletPath = request.getServletPath(); //URL에서 서블릿 경로 알아내기
-		HttpSession session = request.getSession();
 		
 		try {
 			/*
@@ -39,6 +37,7 @@ public class DispatcherServlet extends HttpServlet {
 			
 			HashMap<String,Object> model = new HashMap<String,Object>();
 			model.put("memberDao", sc.getAttribute("memberDao"));
+			model.put("session", request.getSession());
 			
 //			String pageControllerPath = null;
 			Controller pageController = null;
@@ -72,24 +71,21 @@ public class DispatcherServlet extends HttpServlet {
 				
 			} else if("/auth/login.do".equals(servletPath)) {
 				pageController = new LogInController();
-				if(request.getParameter("email")!=null) {
+//				if(request.getParameter("email")!=null) {
 					model.put("loginUser",new Member()
 							.setEmail(request.getParameter("email"))
 							.setPassword(request.getParameter("password")));
-				}
+//				}
 			} else if("/auth/logout.do".equals(servletPath)) {
 				pageController = new LogOutController();
-				session.invalidate();
 			}
 			
 			String viewUrl = pageController.execute(model);
 			
 			for(String key : model.keySet()) {
 				request.setAttribute(key, model.get(key));
-				if(key == "member") {
-					session.setAttribute("member", model.get("member"));
-				}
 			}
+			
 			if(viewUrl.startsWith("redirect:")) {
 				response.sendRedirect(viewUrl.substring(9));
 				return;
