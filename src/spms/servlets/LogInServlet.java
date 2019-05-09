@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
 import spms.vo.Member;
 
 @SuppressWarnings("serial")
@@ -26,7 +26,7 @@ public class LogInServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao"); 
+			MySqlMemberDao memberDao = (MySqlMemberDao)sc.getAttribute("memberDao"); 
 			Member loginUser = memberDao.exist(request.getParameter("email"), request.getParameter("password"));
 			if(loginUser != null) {
 				// HttpSession에 VO 보관

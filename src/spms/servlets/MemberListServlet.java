@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
 
 // UI 출력 코드를 제거하고, UI 생성 및 출력을 JSP에게 위임한다.
 @SuppressWarnings("serial")
@@ -20,7 +20,7 @@ public class MemberListServlet extends HttpServlet {
 		try {
 			// 컨텍스트 초기화 매개변수 사용
 				ServletContext sc = this.getServletContext();
-				MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao"); //Listener에서 미리생성한 Dao가져오기
+				MySqlMemberDao memberDao = (MySqlMemberDao)sc.getAttribute("memberDao"); //Listener에서 미리생성한 Dao가져오기
 				request.setAttribute("members", memberDao.selectList()); //Dao결과 request에 보관
 				request.setAttribute("viewUrl", "/member/MemberList.jsp"); //호출할 JSP주소 request에 보관
 //				response.setContentType("text/html; charset=UTF-8");

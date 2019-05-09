@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
 import spms.vo.Member;
 
 @SuppressWarnings("serial")
@@ -20,7 +20,7 @@ public class MemberUpdateServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			MySqlMemberDao memberDao = (MySqlMemberDao)sc.getAttribute("memberDao");
 			request.setAttribute("updateUser", memberDao.selectOne(Integer.parseInt(request.getParameter("no"))));
 			request.setAttribute("viewUrl","/member/MemberUpdateForm.jsp");
 		} catch (Exception e) {
@@ -32,7 +32,7 @@ public class MemberUpdateServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			MySqlMemberDao memberDao = (MySqlMemberDao)sc.getAttribute("memberDao");
 			memberDao.update((Member)request.getAttribute("member"));
 			
 			request.setAttribute("viewUrl", "redirect:list.do");

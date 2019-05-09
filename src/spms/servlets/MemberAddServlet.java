@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
 import spms.vo.Member;
 
 // UI 출력 코드를 제거하고, UI 생성 및 출력을 JSP에게 위임한다.
@@ -25,7 +25,7 @@ public class MemberAddServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			MySqlMemberDao memberDao = (MySqlMemberDao)sc.getAttribute("memberDao");
 			
 			Member member = (Member)request.getAttribute("member");
 			memberDao.insert(member);

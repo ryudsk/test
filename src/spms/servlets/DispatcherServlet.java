@@ -12,21 +12,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import bind.DataBinding;
+import bind.ServletRequestDataBinder;
 import spms.controls.Controller;
-import spms.controls.LogInController;
-import spms.controls.LogOutController;
-import spms.controls.MemberAddController;
-import spms.controls.MemberDeleteController;
-import spms.controls.MemberListController;
-import spms.controls.MemberUpdateController;
-import spms.vo.Member;
 @SuppressWarnings("serial")
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8"); //응답데이터의 문자집합
-		request.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8"); //요청데이터 한글처리
+		
 		String servletPath = request.getServletPath(); //URL에서 서블릿 경로 알아내기
 		
 		try {
@@ -36,50 +32,15 @@ public class DispatcherServlet extends HttpServlet {
 			ServletContext sc = this.getServletContext();
 			
 			HashMap<String,Object> model = new HashMap<String,Object>();
-			model.put("memberDao", sc.getAttribute("memberDao"));
 			model.put("session", request.getSession());
 			
-//			String pageControllerPath = null;
-			Controller pageController = null;
+			Controller pageController = (Controller)sc.getAttribute(servletPath); 
+			//서블릿 url을 사용하여 controller 꺼내기
 			
-			if("/member/list.do".equals(servletPath)) {
-				pageController = new MemberListController();
-				
-			} else if("/member/add.do".equals(servletPath)) {
-				pageController = new MemberAddController();
-				if(request.getParameter("email")!=null) {
-					model.put("member",new Member()
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password"))
-							.setName(request.getParameter("name")));
-				}
-				
-			} else if("/member/update.do".equals(servletPath)) {
-				pageController = new MemberUpdateController();
-				if(request.getParameter("email")!=null) {
-					model.put("member",new Member()
-							.setNo(Integer.parseInt(request.getParameter("no")))
-							.setEmail(request.getParameter("email"))
-							.setName(request.getParameter("name")));
-				} else {
-					model.put("no", request.getParameter("no"));
-				}
-				
-			} else if("/member/delete.do".equals(servletPath)) {
-				pageController = new MemberDeleteController();
-				model.put("no", request.getParameter("no"));
-				
-			} else if("/auth/login.do".equals(servletPath)) {
-				pageController = new LogInController();
-//				if(request.getParameter("email")!=null) {
-					model.put("loginUser",new Member()
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password")));
-//				}
-			} else if("/auth/logout.do".equals(servletPath)) {
-				pageController = new LogOutController();
+			if(pageController instanceof DataBinding) { //pageController의 데이터타입이 DataBinding이 될 수 있다면.(형변환 가능 여부)
+				prepareRequestData(request, model, (DataBinding)pageController);
 			}
-			
+
 			String viewUrl = pageController.execute(model);
 			
 			for(String key : model.keySet()) {
@@ -94,54 +55,25 @@ public class DispatcherServlet extends HttpServlet {
 				rd.include(request,response);
 			}
 			
-			
-			/* --------------------------------------------
-			//String pageControllerPath = null;
-			if("/member/list.do".equals(servletPath)) {
-				pageControllerPath = "/member/list";
-				
-			}else if("/member/add.do".equals(servletPath)) {
-				pageControllerPath = "/member/add";
-				if(request.getParameter("email") != null) {
-					request.setAttribute("member", new Member()			//VO에 값 담기
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password"))
-							.setName(request.getParameter("name")));
-				}
-				
-			}else if("/member/update.do".equals(servletPath)) {
-				pageControllerPath = "/member/update";
-				if(request.getParameter("email") != null) {
-					request.setAttribute("member", new Member()
-							.setNo(Integer.parseInt(request.getParameter("no")))
-							.setEmail(request.getParameter("email"))
-							.setName(request.getParameter("name")));
-				}
-				
-			}else if("/member/delete.do".equals(servletPath)) {
-				pageControllerPath = "/member/delete";
-			}else if("/auth/login.do".equals(servletPath)) {
-				pageControllerPath = "/auth/login";
-			}else if("/auth/logout.do".equals(servletPath)) {
-				pageControllerPath = "/auth/logout";
-			}
-			
-			RequestDispatcher rd = request.getRequestDispatcher(pageControllerPath); //req,res를 pageController 위임
-			rd.include(request, response);
-			
-			String viewUrl = (String)request.getAttribute("viewUrl");
-			if(viewUrl.startsWith("redirect:")) {
-				response.sendRedirect(viewUrl.substring(9));
-				return;
-			}else {
-				rd = request.getRequestDispatcher(viewUrl);
-				rd.include(request, response);
-			} */
 		}catch(Exception e){
 			e.printStackTrace();
 			request.setAttribute("error", e);
 			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
 			rd.forward(request, response);
+		}
+	}
+	
+	private void prepareRequestData(HttpServletRequest request, HashMap<String, Object> model, DataBinding dataBinding) throws Exception {
+		Object[] dataBinders = dataBinding.getDataBinders(); //Member instance and "member"
+		String dataName = null;
+		Class<?> dataType = null;  // Class<?> 모든 타입의 클래스
+		Object dataObj = null;
+		for(int i=0; i < dataBinders.length; i+=2) {
+			dataName = (String)dataBinders[i];
+			dataType = (Class<?>) dataBinders[i+1];
+			dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
+			
+			model.put(dataName, dataObj);
 		}
 	}
 }
