@@ -3,8 +3,10 @@ package spms.controls;
 import java.util.Map;
 
 import bind.DataBinding;
+import spms.annotation.Component;
 import spms.dao.MySqlMemberDao;
 
+@Component(value="/member/delete.do")
 public class MemberDeleteController implements Controller, DataBinding {
 	
 	//의존객체 주입(DI) 인스턴스 변수와 셋터 메소드

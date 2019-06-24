@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import bind.DataBinding;
 import bind.ServletRequestDataBinder;
+import context.ApplicationContext;
 import spms.controls.Controller;
+import spms.listeners.ContextLoaderListener;
 @SuppressWarnings("serial")
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
@@ -29,13 +30,18 @@ public class DispatcherServlet extends HttpServlet {
 			/*
 			 * chapter 06. front controller 변경
 			 */
-			ServletContext sc = this.getServletContext();
+//			ServletContext sc = this.getServletContext();
+			ApplicationContext ctx = ContextLoaderListener.getApplicationContext();
 			
 			HashMap<String,Object> model = new HashMap<String,Object>();
 			model.put("session", request.getSession());
 			
-			Controller pageController = (Controller)sc.getAttribute(servletPath); 
+//			Controller pageController = (Controller)sc.getAttribute(servletPath); 
 			//서블릿 url을 사용하여 controller 꺼내기
+			Controller pageController = (Controller)ctx.getBean(servletPath);
+			if(pageController == null) {
+				throw new Exception("요청한 서비스를 찾을 수 없습니다.");
+			}
 			
 			if(pageController instanceof DataBinding) { //pageController의 데이터타입이 DataBinding이 될 수 있다면.(형변환 가능 여부)
 				prepareRequestData(request, model, (DataBinding)pageController);

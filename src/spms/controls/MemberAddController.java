@@ -3,9 +3,11 @@ package spms.controls;
 import java.util.Map;
 
 import bind.DataBinding;
+import spms.annotation.Component;
 import spms.dao.MySqlMemberDao;
 import spms.vo.Member;
 
+@Component(value="/member/add.do")
 public class MemberAddController implements Controller, DataBinding {
 	
 	//의존객체 주입(DI) 인스턴스 변수와 셋터 메소드

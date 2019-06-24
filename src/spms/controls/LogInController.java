@@ -5,9 +5,11 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import bind.DataBinding;
+import spms.annotation.Component;
 import spms.dao.MySqlMemberDao;
 import spms.vo.Member;
 
+@Component(value="/auth/login.do")
 public class LogInController implements Controller, DataBinding {
 
 	MySqlMemberDao memberDao;
