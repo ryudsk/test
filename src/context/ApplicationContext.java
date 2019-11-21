@@ -19,6 +19,10 @@ public class ApplicationContext {
 		return objTable.get(key);
 	}
 	
+	public void addBean(String name, Object obj) {
+		objTable.put(name, obj);
+	}
+	
 	public ApplicationContext(String propertiesPath) throws Exception {
 		Properties props = new Properties();
 		props.load(new FileReader(propertiesPath));	// 경로의 파일을 읽어들여 내부 맵에 키밸류 보관
@@ -39,8 +43,6 @@ public class ApplicationContext {
 			objTable.put(key, clazz.newInstance()); // 이름을 key값으로 클래스 생성해서 해시테이블에 입력
 		}
 	}
-	
-	
 	
 	private void prepareObjects(Properties props) throws Exception {
 		Context ctx = new InitialContext();	// JNDI용

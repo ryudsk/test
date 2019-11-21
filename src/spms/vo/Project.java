@@ -1,6 +1,8 @@
 package spms.vo;
 
-import java.util.Date;
+import java.sql.Date;
+//import java.util.Date;
+//책에는 util.Date이나, argument type mismatch Error 발생함..
 
 public class Project {
 	//변수명을 컬럼명으로 하진 않음

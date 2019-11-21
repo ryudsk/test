@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import spms.annotation.Component;
 import spms.vo.Member;
 
-@Component(value="memberDao")
+@Component("memberDao")
 public class MySqlMemberDao implements MemberDao{
 	DataSource ds;
 	public void setDataSource(DataSource ds) {

@@ -69,13 +69,13 @@ public class ServletRequestDataBinder {
 	}
 	
 	private static Method findSetter(Class<?> type, String name) {
-		Method[] methods = type.getMethods(); //넘겨받은 타입의 메소드를 꺼내서 methods 배열에 담는다.
+		Method[] methods = type.getMethods(); //넘겨받은 클래스(타입)의 메소드를 꺼내서 methods 배열에 담는다.
 		
 		String propName = null;
 		for (Method m : methods) {
 			if(!m.getName().startsWith("set")) continue; //메소드 이름이 set으로 시작하지 않으면 패스
 			propName = m.getName().substring(3);		//set으로 시작하면, 앞의 3자리를 제외한 나머지 모든 문자열을 propName에 입력
-			if(propName.toLowerCase().contentEquals(name.toLowerCase())) { //소문자 처리해서 값이 동일하다면, 메소드를 리턴
+			if(propName.toLowerCase().contentEquals(name.toLowerCase())) { //소문자 처리해서 값이 동일하다면, setter 메소드를 리턴
 				return m;
 			}
 		}
